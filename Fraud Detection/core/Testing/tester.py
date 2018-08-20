@@ -1,16 +1,14 @@
 from sklearn.externals import joblib
 import pandas as pd
 import os
-from Processing.cleaning import clean
+from core.Processing.cleaning import clean
 
 
 class tester:
 
     def test(df):
 
-        if isinstance(df, pd.DataFrame):
-            raise ValueError("Invalid input type")
-
+        
         model_ada, model_knn, model_svr = None, None, None
         if os.path.isfile("models/model_ada.pkl"):
             model_ada = joblib.load("models/model_ada.pkl")
@@ -30,10 +28,11 @@ class tester:
         model_svr = joblib.load("models/model_svr.pkl")
         model_knn = joblib.load("models/model_knn.pkl")
         model_ada = joblib.load("models/model_ada.pkl")
-        df = clean.clean_df(df)
+        df, r = clean.clean_df(df)
         values = df.values
         res = (model_ada.predict(values) + model_knn.predict(values) + model_svr.predict(values)) / 3
+        return res
 
 
-df = pd.DataFrame()
-tester.test()
+#df = pd.DataFrame()
+#tester.test()

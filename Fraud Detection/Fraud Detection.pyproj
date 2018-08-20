@@ -32,9 +32,14 @@
     <Compile Include="api\apiwrapper.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="core\__init__.py">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="core\fraud_check.py" />
+    <Compile Include="core\Processing\cleaning.py" />
+    <Compile Include="core\Processing\__init__.py" />
+    <Compile Include="core\Testing\tester.py" />
+    <Compile Include="core\Testing\__init__.py" />
+    <Compile Include="core\Training\trainer.py" />
+    <Compile Include="core\Training\__init__.py" />
+    <Compile Include="core\__init__.py" />
     <Compile Include="runserver.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="api\views.py" />
@@ -46,6 +51,9 @@
     <Folder Include="api\" />
     <Folder Include="config\" />
     <Folder Include="core\" />
+    <Folder Include="core\Processing\" />
+    <Folder Include="core\Testing\" />
+    <Folder Include="core\Training\" />
     <Folder Include="tests\" />
     <Folder Include="api\static\" />
     <Folder Include="api\static\content\" />
@@ -58,6 +66,7 @@
   <ItemGroup>
     <Content Include="config\.gitignore" />
     <Content Include="config\.gitkeep" />
+    <Content Include="core\.gitkeep" />
     <Content Include="requirements.txt" />
     <Content Include="api\static\content\bootstrap.css" />
     <Content Include="api\static\content\bootstrap.min.css" />

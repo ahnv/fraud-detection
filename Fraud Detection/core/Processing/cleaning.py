@@ -40,11 +40,11 @@ class clean:
             raise ValueError("Invalid input type")
 
         arr = ["delivery_method", "listed", "num_order", "user_facebook", "user_twitter", "product_cost", "no_of_items",
-               "hour_checkout", "diff_order"]
+               "hour_checkout"]
 
-        col = df.columns
-        if len(df.columns) != 9:
-            raise ValueError("Not enough features")
+        for col in df.columns:
+            if col not in arr:
+                df.drop(col, axis =1, inplace = True)
 
         df2 = pd.DataFrame()
 
@@ -56,14 +56,14 @@ class clean:
 
         df2 = clean.preprocess(df2)
 
-        return df2
+        return df2, 0
 
 
     # Return dataframe
     @staticmethod
     def clean_data(file_path):
         arr = ["delivery_method", "listed", "num_order", "user_facebook", "user_twitter", "product_cost", "no_of_items",
-               "hour_checkout", "diff_order"]
+               "hour_checkout", "fraud"]
 
         if not os.path.isfile(file_path):
             # TO-DO raise exception instead of returning string

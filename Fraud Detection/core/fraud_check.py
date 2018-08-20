@@ -1,6 +1,6 @@
-from Processing.cleaning import clean
-from Training.trainer import train
-from Testing.tester import tester
+from core.Processing.cleaning import clean
+from core.Training.trainer import train
+from core.Testing.tester import tester
 
 
 class fraud_driver:
@@ -12,16 +12,16 @@ class fraud_driver:
         if res > 0:
             raise ValueError("Missing file/data")
 
-        tester.test(df)
+        return tester.test(df)
 
 
 
     @staticmethod
-    def fraud_train(file_path):
+    def fraud_train(file_path = "models/data/raw_data.csv"):
         df, res = clean.clean_data(file_path)
-
+        print(file_path)
         if res > 0:
-            raise ValueError("Missing file/data")
+            raise ValueError(str(res) + " Missing file/data")
 
         train.trainer(df, replace_model=True)
 
@@ -41,5 +41,4 @@ class fraud_driver:
         elif res == 2:
             print("File is empty!")
 
-
-fraud_driver.fraud_train("data/data.csv")
+#fraud_driver.fraud_train()
