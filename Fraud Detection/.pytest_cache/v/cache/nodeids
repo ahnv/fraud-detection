@@ -1,0 +1,7 @@
+[
+  "tests/api/apiwrapper.py::test_post_request_with_accurate_data",
+  "tests/api/apiwrapper.py::test_post_request_with_incomplete_data",
+  "tests/api/apiwrapper.py::test_post_request_with_incorrect_data",
+  "tests/api/apiwrapper.py::test_db_connect",
+  "tests/api/apiwrapper.py::test_db_input"
+]

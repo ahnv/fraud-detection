@@ -29,9 +29,18 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="api\apiwrapper.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="core\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="runserver.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="api\views.py" />
+    <Compile Include="tests\api\apiwrapper.py" />
+    <Compile Include="tests\api\__init__.py" />
+    <Compile Include="tests\__init__.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />
@@ -43,6 +52,8 @@
     <Folder Include="api\static\fonts\" />
     <Folder Include="api\static\scripts\" />
     <Folder Include="api\templates\" />
+    <Folder Include="tests\api\" />
+    <Folder Include="tests\api\__pycache__\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="config\.gitignore" />
@@ -74,6 +85,7 @@
     <Content Include="api\templates\contact.html" />
     <Content Include="api\templates\index.html" />
     <Content Include="api\templates\layout.html" />
+    <Content Include="tests\api\__pycache__\apiwrapper.cpython-36-PYTEST.pyc" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda36-64" />
