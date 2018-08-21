@@ -19,7 +19,7 @@ def summary():
     aw = apiwrapper()
     return aw.generateGraph()
 
-@app.route('/score', methods=['POST'])
+@app.route('/score', methods=['GET','POST'])
 def score():
     content = request.get_json(force=True)
     aw = apiwrapper()
@@ -37,3 +37,4 @@ def about():
         year=datetime.now().year,
         message='Your application description page.'
     )
+

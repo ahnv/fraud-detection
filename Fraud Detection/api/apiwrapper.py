@@ -8,7 +8,7 @@ from io import BytesIO
 import numpy as np
 import base64
 from flask import jsonify
-from core import fraud_check
+from core import core
 import time
 
 
@@ -25,7 +25,7 @@ class apiwrapper:
         self.collection = self.db.fraud_data
         self.testcollection = self.db.test_fraud_data
 
-    def postTransactionDetails(self, jsonData):
+    def postTransactionDetails(self, jsonData, insert=True):
         error = ''
         for col in self.cols:
             if (col[0] not in jsonData):
@@ -34,9 +34,6 @@ class apiwrapper:
                 error += '(' +  col[0] + '. Expected Type: `' + col[1] + '`. Recieved Type:'+ type(jsonData[col[0]]).__name__ +' )'
         
         if error: return error      
-
-        jsonData['diff_order'] = (jsonData['checkout'] - jsonData['add_to_cart']) / float( 60 ** 2)
-        print(jsonData['diff_order'])
 
         data = []
         cols = []
@@ -47,15 +44,19 @@ class apiwrapper:
         df = pd.DataFrame(data=[data], columns=cols)
         df['checkout'] = df['checkout'].apply(lambda x: time.gmtime(x))
         df['hour_checkout'] = df['checkout'].map(lambda x: x.tm_hour)
-        print(df)
-        is_fraud = fraud_check.fraud_driver.fraud_check(df)
-        
+        is_fraud = core.fraud_check(df)
+        print(is_fraud)
+        if not insert:
+            return is_fraud
         jsonData['fraud'] = is_fraud
-        
-        self.insertDataToCollection(jsonData, self.collection)
+        if (insert):
+            self.insertDataToCollection(jsonData, self.collection)
+        if is_fraud > 0.7:
+            return 'Fraud Transaction Detected'
+        if is_fraud > 0.5 and is_fraud < 0.7:
+            return 'Potential Fraud. Proceed with Verification'
 
-        if (is_fraud): return 'Fraud Transaction Detected'
-        return 'No Fraud'+ str(is_fraud)
+        return 'No Fraud'
         
     def insertDataToCollection(self, jsonData, coll):
         id = coll.find_one(jsonData)
@@ -69,7 +70,7 @@ class apiwrapper:
         body = lowcounts, midcounts, highcounts
 
         highcounts.append(self.collection.find({'fraud' : { "$gt" : 0.7}}).count())
-        midcounts.append(self.collection.find({"$and" : [{'fraud' : { "$gt" : 0.5}},{'fraud' : { "$lt" : 0.6}}]}).count())
+        midcounts.append(self.collection.find({"$and" : [{'fraud' : { "$gt" : 0.5}},{'fraud' : { "$lt" : 0.7}}]}).count())
         lowcounts.append(self.collection.find({'fraud' : { "$lt" : 0.5}}).count())
         
         labels = ['low', 'medium', 'high']
@@ -82,3 +83,8 @@ class apiwrapper:
 
         return image.getvalue(), 200, { 'Content-Type' : 'image/png' }
         
+    def getFromDB(self, coll):
+        return coll.find()
+
+    def updateDB(self, id, is_fraud, coll):
+        coll.update({"_id" : id}, { "$set" : {"fraud" : is_fraud } })

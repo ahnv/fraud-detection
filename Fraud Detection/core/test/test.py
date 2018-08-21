@@ -1,15 +1,15 @@
 from sklearn.externals import joblib
 import pandas as pd
 import os
-from core.Processing.cleaning import clean
+from core.process.clean import clean
+import numpy as np
 
-
-class tester:
+class test:
 
     def test(df):
-
         
         model_ada, model_knn, model_svr = None, None, None
+
         if os.path.isfile("models/model_ada.pkl"):
             model_ada = joblib.load("models/model_ada.pkl")
         else:
@@ -24,15 +24,13 @@ class tester:
             model_svr = joblib.load("models/model_svr.pkl")
         else:
             raise ValueError("SVR model not available")
-
-        model_svr = joblib.load("models/model_svr.pkl")
-        model_knn = joblib.load("models/model_knn.pkl")
-        model_ada = joblib.load("models/model_ada.pkl")
-        df, r = clean.clean_df(df)
+        
+        df = clean.clean_df(df)
         values = df.values
-        res = (model_ada.predict(values) + model_knn.predict(values) + model_svr.predict(values)) / 3
+        ada = model_ada.predict(values)
+        knn = model_knn.predict(values)
+        svr = model_svr.predict(values)
+
+        res = np.mean([ada,knn,svr])
+
         return res
-
-
-#df = pd.DataFrame()
-#tester.test()

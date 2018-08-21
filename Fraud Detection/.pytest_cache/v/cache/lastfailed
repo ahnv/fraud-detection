@@ -1,1 +1,4 @@
-{}
+{
+  "tests/api/apiwrapper.py::test_post_request_with_accurate_data": true,
+  "tests/api/apiwrapper.py::test_post_request_with_incorrect_data": true
+}

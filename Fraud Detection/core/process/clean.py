@@ -3,22 +3,25 @@ import pandas as pd
 import os.path
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-
+from sklearn.externals import joblib 
+import time
 
 class clean:
 
     @staticmethod
     def preprocess(df):
-        # scaling done
-        if not type(df) == pd.DataFrame:
+        if not type(df) == pd.DataFrame: 
             raise ValueError("Invalid input type")
 
         temp = None
 
         for val in df.columns:
             df[val] = df[val].astype("float64")
-
-        scaler = StandardScaler(copy=False, with_mean=True,with_std=True)
+        if os.path.isfile("models/scaler_model.pkl"):
+            scaler = joblib.load("models/scaler_model.pkl")
+        else:
+            scaler = StandardScaler(copy=False, with_mean=True,with_std=True)
+        
         if "fraud" in df:
             temp = pd.DataFrame()
             temp["fraud"] = df["fraud"]
@@ -26,8 +29,9 @@ class clean:
             scaler.fit(df)
             df["fraud"] = temp["fraud"]
         else:
-
             scaler.fit(df)
+        
+        joblib.dump(scaler, 'scaler_model.pkl') 
 
         return df
 
@@ -39,31 +43,22 @@ class clean:
         if not type(df) == pd.DataFrame:
             raise ValueError("Invalid input type")
 
-        arr = ["delivery_method", "listed", "num_order", "user_facebook", "user_twitter", "product_cost", "no_of_items",
-               "hour_checkout"]
+        arr = ["delivery_method","hour_checkout","listed","no_of_items","num_order","product_cost","user_facebook","user_twitter"]
 
         for col in df.columns:
             if col not in arr:
                 df.drop(col, axis =1, inplace = True)
 
-        df2 = pd.DataFrame()
-
-        for val in arr:
-            if val in df:
-                df2[val] = df[val]
-            else:
-                raise ValueError("Missing feature", val)
-
-        df2 = clean.preprocess(df2)
-
-        return df2, 0
+        df_clean = df[arr]
+        df_clean = clean.preprocess(df_clean)
+        return df_clean
 
 
     # Return dataframe
     @staticmethod
     def clean_data(file_path):
-        arr = ["delivery_method", "listed", "num_order", "user_facebook", "user_twitter", "product_cost", "no_of_items",
-               "hour_checkout", "fraud"]
+        
+        arr = ["delivery_method","hour_checkout","listed","no_of_items","num_order","product_cost","user_facebook","user_twitter", "fraud"]
 
         if not os.path.isfile(file_path):
             # TO-DO raise exception instead of returning string
@@ -87,15 +82,10 @@ class clean:
         # print(df.head(10))
 
         df.sort_index(inplace=True, axis=1)
-        for val in df.columns:
-            if not (val in arr):
-                df.drop(val, axis=1, inplace=True)
-
-        temp = pd.DataFrame()
-        temp["fraud"] = df["fraud"]
-        df.drop("fraud", inplace=True, axis=1)
+        df['checkout'] = df['checkout'].apply(lambda x: time.gmtime(x))
+        df['hour_checkout'] = df['checkout'].map(lambda x: x.tm_hour)
+        df = df[arr]
         df = clean.preprocess(df)
-        df["fraud"] = temp["fraud"]
 
         # print(df.head(10))
         return df, 0
